@@ -18,6 +18,8 @@ if 'prods' not in st.session_state:
 if 'seq' not in st.session_state:
     st.session_state['seq'] = 0
 
+csvpath = 'csv/notas.csv'
+
 st.set_page_config(layout='wide')
 
 print('reloaded')
@@ -137,7 +139,7 @@ def adicionaNotas():
                     df['pdf_count'] = len(uploaded)
                     df['pdf_prefix'] = prefix
                     # st.write(df)
-                    csvpath = 'csv/notas.csv'
+
                     if os.path.isfile(csvpath):
                         db = pd.read_csv(csvpath)
                         db = pd.concat([db,df], ignore_index=True)
@@ -160,18 +162,21 @@ def adicionaNotas():
                     st.markdown(pdf_display, unsafe_allow_html=True)
 
 
-def test():
-    st.title('test')
+def view():
+    if os.path.isfile(csvpath):
+        db = pd.read_csv(csvpath)
+        st.write(db)
+    # st.title('test')
 
 
 # main
 if not hasattr(st.session_state, 'page'):
     st.session_state.page = adicionaNotas
 
-# if st.sidebar.button("Adicionar Notas"):
-#     st.session_state.page = adicionaNotas
-#
-# if st.sidebar.button("Test"):
-#     st.session_state.page = test
+if st.sidebar.button("Adicionar Notas"):
+    st.session_state.page = adicionaNotas
+
+if st.sidebar.button("Visualizar"):
+    st.session_state.page = view
 
 st.session_state.page()
