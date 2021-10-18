@@ -62,7 +62,7 @@ def update_prefix(dados):
 
 def show_pdf(file):
     base64_pdf = base64.b64encode(file.read()).decode('utf-8')
-    pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="98%" height="500" type="application/pdf">'
+    pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="98%" height="500" type="application/pdf"></iframe>'
     st.markdown(pdf_display, unsafe_allow_html=True)
 
 
