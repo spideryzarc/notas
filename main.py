@@ -79,7 +79,7 @@ def adicionaNotas():
     with lay_cols[2]:
         cont_content = st.container()
 
-    # viewph = cont_view.empty()
+    viewph = cont_view.empty()
 
     uploaded = cont_view.file_uploader('Escolha um arquivo', key=f"up_key{st.session_state['seq']}",
                                        type=['pdf', 'jpg', 'jpeg', 'png'],
@@ -164,7 +164,7 @@ def adicionaNotas():
                     st.session_state['seq'] += 1
                     ph.button('Próximo')
         # end loaded
-    with cont_view:
+    with viewph:
         # st.title('view')
         if uploaded is not None:
             for i, pdf_file in enumerate(uploaded):
