@@ -71,15 +71,15 @@ def show_pdf(file, ext='.pdf'):
 
 def adicionaNotas():
     # st.title('Cadastro de notas')
-    lay_cols = st.columns([2, 2, 4])
+    lay_cols = st.columns([2, 1, 1])
     with lay_cols[0]:
-        cont_form = st.container()
-    with lay_cols[1]:
-        cont_content = st.container()
-    with lay_cols[2]:
         cont_view = st.container()
+    with lay_cols[1]:
+        cont_form = st.container()
+    with lay_cols[2]:
+        cont_content = st.container()
 
-    viewph = cont_view.empty()
+    # viewph = cont_view.empty()
 
     uploaded = cont_view.file_uploader('Escolha um arquivo', key=f"up_key{st.session_state['seq']}",
                                        type=['pdf', 'jpg', 'jpeg', 'png'],
@@ -164,7 +164,7 @@ def adicionaNotas():
                     st.session_state['seq'] += 1
                     ph.button('Próximo')
         # end loaded
-    with viewph:
+    with cont_view:
         # st.title('view')
         if uploaded is not None:
             for i, pdf_file in enumerate(uploaded):

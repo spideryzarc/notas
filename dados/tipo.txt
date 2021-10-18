@@ -1,3 +1,4 @@
-Nota Fiscal
 Recibo
+Comprovante Bancário
+Nota Fiscal
 Outro
