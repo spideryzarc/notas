@@ -60,10 +60,13 @@ def update_prefix(dados):
     return str
 
 
-def show_pdf(file):
-    base64_pdf = base64.b64encode(file.read()).decode('utf-8')
-    pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="98%" height="500" type="application/pdf"></iframe>'
-    st.markdown(pdf_display, unsafe_allow_html=True)
+def show_pdf(file, ext='.pdf'):
+    if ext == '.pdf':
+        base64_pdf = base64.b64encode(file.read()).decode('utf-8')
+        pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="98%" height="500" type="application/pdf">'
+        st.markdown(pdf_display, unsafe_allow_html=True)
+    else:
+        st.image(file)
 
 
 def adicionaNotas():
@@ -76,7 +79,8 @@ def adicionaNotas():
     with lay_cols[2]:
         cont_view = st.container()
 
-    uploaded = cont_view.file_uploader('Escolha um arquivo', key=f"up_key{st.session_state['seq']}", type=['pdf'],
+    uploaded = cont_view.file_uploader('Escolha um arquivo', key=f"up_key{st.session_state['seq']}",
+                                       type=['pdf', 'jpg'],
                                        accept_multiple_files=True)
     if uploaded is not None and len(uploaded) > 0:
         with cont_form:
@@ -138,7 +142,8 @@ def adicionaNotas():
                 if ok:
                     prefix = update_prefix(dados)
                     for i, pdf_file in enumerate(uploaded):
-                        save_file('pdfs', f"{prefix}_{i}.pdf", pdf_file)
+                        name, ext = os.path.splitext(pdf_file.name)
+                        save_file('pdfs', f"{prefix}_{i}{ext}", pdf_file)
 
                     for k, v in dados.items():
                         if k != 'valor':
@@ -162,9 +167,10 @@ def adicionaNotas():
         if uploaded is not None:
             for i, pdf_file in enumerate(uploaded):
                 ex = st.expander(pdf_file.name, expanded=True)
+                name, ext = os.path.splitext(pdf_file.name)
                 with ex:
-                    st.write(f"Será salvo como: {update_prefix(dados)}_{i}.pdf")
-                    show_pdf(pdf_file)
+                    st.write(f"Será salvo como: {update_prefix(dados)}_{i}{ext}")
+                    show_pdf(pdf_file, ext)
                     # base64_pdf = base64.b64encode(pdf_file.read()).decode('utf-8')
                     # pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="{600}" height="{800}" type="application/pdf">'
                     # st.markdown(pdf_display, unsafe_allow_html=True)
@@ -181,13 +187,12 @@ def download(file_path, filename, ext, texto='download'):
 
 
 def view():
-
     lay_pdfs, lay_table = st.columns([2, 4])
     with lay_table:
         st.title('Tabela')
         if os.path.isfile(csvpath):
             db = pd.read_csv(csvpath)
-            download(csvpath,'tabela.csv','csv','Baixar tabela')
+            download(csvpath, 'tabela.csv', 'csv', 'Baixar tabela')
             st.table(db)
 
     with lay_pdfs:
@@ -209,7 +214,7 @@ def view():
                 filename = os.path.join(root, file)
                 filelist.append(filename)
                 if st.button(file):
-                    download(filename, file, 'pdf',file)
+                    download(filename, file, 'pdf', file)
 
 
 # main
