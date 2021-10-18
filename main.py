@@ -217,14 +217,27 @@ def view():
                     download(filename, file, 'pdf', file)
 
 
-# main
-if not hasattr(st.session_state, 'page'):
-    st.session_state.page = adicionaNotas
+def main():
+    if not hasattr(st.session_state, 'page'):
+        st.session_state.page = adicionaNotas
 
-if st.sidebar.button("Adicionar Notas"):
-    st.session_state.page = adicionaNotas
+    if st.sidebar.button("Adicionar Notas"):
+        st.session_state.page = adicionaNotas
 
-if st.sidebar.button("Visualizar"):
-    st.session_state.page = view
+    if st.sidebar.button("Visualizar"):
+        st.session_state.page = view
 
-st.session_state.page()
+    st.session_state.page()
+
+
+ph = st.empty()
+pw = ph.text_input('senha')
+if 'pass' not in st.session_state or st.session_state['pass'] != st.session_state['senha']:
+    if pw is not None:
+        st.session_state['pass'] = pw
+    if st.session_state['pass'] == st.session_state['senha']:
+        ph.empty()
+        main()
+else:
+    ph.empty()
+    main()
