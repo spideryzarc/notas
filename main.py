@@ -80,7 +80,7 @@ def adicionaNotas():
         cont_view = st.container()
 
     uploaded = cont_view.file_uploader('Escolha um arquivo', key=f"up_key{st.session_state['seq']}",
-                                       type=['pdf', 'jpg'],
+                                       type=['pdf', 'jpg','jpeg','png'],
                                        accept_multiple_files=True)
     if uploaded is not None and len(uploaded) > 0:
         with cont_form:
