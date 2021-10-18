@@ -158,7 +158,7 @@ def adicionaNotas():
                 with ex:
                     st.write(f"Será salvo como: {update_prefix(dados)}_{i}.pdf")
                     base64_pdf = base64.b64encode(pdf_file.read()).decode('utf-8')
-                    pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="90%" height="{800}" type="application/pdf">'
+                    pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="{600}" height="{800}" type="application/pdf">'
                     st.markdown(pdf_display, unsafe_allow_html=True)
 
 
