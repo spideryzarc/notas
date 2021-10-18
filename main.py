@@ -57,7 +57,7 @@ def update_prefix(dados):
         str += "_" + dados['danf']
     str += "_%.2f" % dados['valor']
 
-    return str
+    return str.replace('/','_')
 
 
 def show_pdf(file, ext='.pdf'):
