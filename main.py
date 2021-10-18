@@ -232,10 +232,10 @@ def main():
 
 ph = st.empty()
 pw = ph.text_input('senha')
-if 'pass' not in st.session_state or st.session_state['pass'] != st.session_state['senha']:
+if 'pass' not in st.session_state or st.session_state['pass'] != st.secrets['senha']:
     if pw is not None:
         st.session_state['pass'] = pw
-    if st.session_state['pass'] == st.session_state['senha']:
+    if st.session_state['pass'] == st.secrets['senha']:
         ph.empty()
         main()
 else:
