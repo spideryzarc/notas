@@ -4,6 +4,7 @@
 import base64
 import os
 import shutil
+import zipfile
 
 from pycpfcnpj import cpfcnpj
 
@@ -20,7 +21,7 @@ if 'seq' not in st.session_state:
 
 csvpath = 'csv/notas.csv'
 
-st.set_page_config(layout='wide')
+st.set_page_config(layout='wide', initial_sidebar_state='collapsed')
 
 print('reloaded')
 
@@ -59,9 +60,15 @@ def update_prefix(dados):
     return str
 
 
+def show_pdf(file):
+    base64_pdf = base64.b64encode(file.read()).decode('utf-8')
+    pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="98%" height="500" type="application/pdf">'
+    st.markdown(pdf_display, unsafe_allow_html=True)
+
+
 def adicionaNotas():
     st.title('Cadastro de notas')
-    lay_cols = st.columns([1, 2, 4])
+    lay_cols = st.columns([2, 2, 4])
     with lay_cols[0]:
         cont_form = st.container()
     with lay_cols[1]:
@@ -133,8 +140,8 @@ def adicionaNotas():
                     for i, pdf_file in enumerate(uploaded):
                         save_file('pdfs', f"{prefix}_{i}.pdf", pdf_file)
 
-                    for k,v in dados.items():
-                        if k!='valor':
+                    for k, v in dados.items():
+                        if k != 'valor':
                             df[k] = v
                     df['pdf_count'] = len(uploaded)
                     df['pdf_prefix'] = prefix
@@ -142,14 +149,14 @@ def adicionaNotas():
 
                     if os.path.isfile(csvpath):
                         db = pd.read_csv(csvpath)
-                        db = pd.concat([db,df], ignore_index=True)
-                        db.to_csv(csvpath,index=None)
+                        db = pd.concat([db, df], ignore_index=True)
+                        db.to_csv(csvpath, index=None)
                     else:
-                        df.to_csv(csvpath,index=None)
+                        df.to_csv(csvpath, index=None)
                     # Delete all the items in Session state
                     st.session_state['seq'] += 1
                     ph.button('Próximo')
-        #end loaded
+        # end loaded
     with cont_view:
         # st.title('view')
         if uploaded is not None:
@@ -157,16 +164,52 @@ def adicionaNotas():
                 ex = st.expander(pdf_file.name, expanded=True)
                 with ex:
                     st.write(f"Será salvo como: {update_prefix(dados)}_{i}.pdf")
-                    base64_pdf = base64.b64encode(pdf_file.read()).decode('utf-8')
-                    pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="{600}" height="{800}" type="application/pdf">'
-                    st.markdown(pdf_display, unsafe_allow_html=True)
+                    show_pdf(pdf_file)
+                    # base64_pdf = base64.b64encode(pdf_file.read()).decode('utf-8')
+                    # pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="{600}" height="{800}" type="application/pdf">'
+                    # st.markdown(pdf_display, unsafe_allow_html=True)
+
+
+def download(file_path, filename, ext, texto='download'):
+    with open(file_path, 'rb') as f:
+        bytes = f.read()
+        b64 = base64.b64encode(bytes).decode()
+        href = f'<a href="data:file/{ext};base64,{b64}" download=\'{filename}\'>\
+            {texto}\
+        </a>'
+    st.markdown(href, unsafe_allow_html=True)
 
 
 def view():
-    if os.path.isfile(csvpath):
-        db = pd.read_csv(csvpath)
-        st.write(db)
-    # st.title('test')
+
+    lay_pdfs, lay_table = st.columns([2, 4])
+    with lay_table:
+        st.title('Tabela')
+        if os.path.isfile(csvpath):
+            db = pd.read_csv(csvpath)
+            download(csvpath,'tabela.csv','csv','Baixar tabela')
+            st.table(db)
+
+    with lay_pdfs:
+        st.title('Arquivos')
+        if st.button('Baixar tudo'):
+            ziph = zipfile.ZipFile('all.zip', 'w', zipfile.ZIP_DEFLATED)
+            for path in ['pdfs/', 'csv']:
+                for root, dirs, files in os.walk(path):
+                    for file in files:
+                        ziph.write(os.path.join(root, file),
+                                   os.path.relpath(os.path.join(root, file),
+                                                   os.path.join(path, '..')))
+            ziph.close()
+            download('all.zip', 'all.zip', 'zip')
+
+        filelist = []
+        for root, dirs, files in os.walk("pdfs/"):
+            for file in files:
+                filename = os.path.join(root, file)
+                filelist.append(filename)
+                if st.button(file):
+                    download(filename, file, 'pdf',file)
 
 
 # main
