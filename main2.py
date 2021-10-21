@@ -14,7 +14,7 @@ if 'seq' not in st.session_state:
 
 
 def cadastro():
-    cols = st.columns([1, 4, 3, 2])
+    cols = st.columns([2, 11, 5, 4])
     upload_placeholder = cols[1].empty()
     uploaded = upload_placeholder.file_uploader('Selecione todos os arquivos', key=f"up_key{st.session_state['seq']}",
                                                 type=['pdf', 'jpg', 'jpeg', 'png'],
