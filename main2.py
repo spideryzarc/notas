@@ -37,14 +37,16 @@ def cadastro():
             check.append(cols[0].checkbox(name, key=f'check{i}'))
         pass
         selected = False
-        for i, c in enumerate(check):
-            if c:
-                selected = True
-                file = files[i]
-                name, ext = os.path.splitext(file['name'])
-                ex = cols[1].expander(name, expanded=True)
-                with ex:
-                    show_pdf(file['body'], ext)
+        with cols[1]:
+            with st.spinner('carregando...'):
+                for i, c in enumerate(check):
+                    if c:
+                        selected = True
+                        file = files[i]
+                        name, ext = os.path.splitext(file['name'])
+                        ex = st.expander(name, expanded=True)
+                        with ex:
+                            show_pdf(file['body'], ext)
 
         if selected:
             with cols[2]:
@@ -97,7 +99,7 @@ def cadastro():
                 st.write(df)
                 if dados['doc'] is not None:
                     if not cpfcnpj.cpf.validate(dados['doc']) and not cpfcnpj.cnpj.validate(dados['doc']):
-                        st.warning("Documento inválido")
+                        st.warning("cpf / cnpj inválido")
                 if dados['emissor'] is None or dados['emissor'] == '':
                     st.warning("Emissor vazio")
                 ph = st.empty()
@@ -190,7 +192,7 @@ def main():
 
 
 ph = st.empty()
-pw = ph.text_input('senha')
+pw = ph.text_input('Senha', type="password")
 if 'pass' not in st.session_state or st.session_state['pass'] != st.secrets['senha']:
     if pw is not None:
         st.session_state['pass'] = pw
