@@ -7,10 +7,9 @@ import shutil
 import zipfile
 
 from pycpfcnpj import cpfcnpj
-
+from pdf2image import convert_from_bytes
 import numpy as np
 import streamlit as st
-# from streamlit_tags import st_tags
 import pandas as pd
 
 if 'prods' not in st.session_state:
@@ -62,9 +61,11 @@ def update_prefix(dados):
 
 def show_pdf(file, ext='.pdf'):
     if ext == '.pdf':
-        base64_pdf = base64.b64encode(file.read()).decode('utf-8')
-        pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="98%" height="500" type="application/pdf">'
-        st.markdown(pdf_display, unsafe_allow_html=True)
+        # base64_pdf = base64.b64encode(file.read()).decode('utf-8')
+        # pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="98%" height="500" type="application/pdf">'
+        # st.markdown(pdf_display, unsafe_allow_html=True)
+        images = convert_from_bytes(file.read())
+        st.image(images)
     else:
         st.image(file)
 
