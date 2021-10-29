@@ -21,7 +21,9 @@ def cadastro():
                                                 accept_multiple_files=True)
     if not hasattr(st.session_state, 'files') or len(st.session_state['files']) == 0:
         if uploaded is not None and len(uploaded) > 0:
+            uploaded
             files = [{'name': u.name, 'body': u.read()} for u in uploaded]
+            files.sort(key=lambda a: a['name'])
             st.session_state['files'] = files
         else:
             files = None
@@ -33,7 +35,7 @@ def cadastro():
         check = []
         for i, file in enumerate(files):
             name, ext = os.path.splitext(file['name'])
-            name = (name[:10] + '..') if len(name) > 10 else name
+            # name = (name[:10] + '..') if len(name) > 10 else name
             check.append(cols[0].checkbox(name, key=f'check{i}'))
         pass
         selected = False
