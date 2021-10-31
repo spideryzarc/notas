@@ -3,6 +3,7 @@ import zipfile
 
 import pandas as pd
 import streamlit as st
+from streamlit_tags import st_tags, st_tags_sidebar
 from pycpfcnpj import cpfcnpj
 
 from utils import *
@@ -14,6 +15,16 @@ if 'seq' not in st.session_state:
 
 
 def cadastro():
+    # keywords = st_tags(
+    #     label='# Enter Keywords:',
+    #     text='Press enter to add more',
+    #     value=['Zero', 'One', 'Two'],
+    #      =['five', 'six', 'seven',
+    #                  'eight', 'nine', 'three',
+    #                  'eleven', 'ten', 'four'],
+    #     maxtags=4,
+    #     key='1')
+
     cols = st.columns([2, 11, 5, 4])
     upload_placeholder = cols[1].empty()
     uploaded = upload_placeholder.file_uploader('Selecione todos os arquivos', key=f"up_key{st.session_state['seq']}",
@@ -53,8 +64,16 @@ def cadastro():
         if selected:
             with cols[2]:
                 dados = {}
-                dados['emissor'] = st.text_input('Emissor', key=f"emissor{st.session_state['seq']}")
-                dados['doc'] = st.text_input('cpf / cnpj', key=f"doc{st.session_state['seq']}")
+                # dados['emissor'] = st.text_input('Emissor', key=f"emissor{st.session_state['seq']}")
+                tag = st_tags(label='Emissor', key=f"emissor{st.session_state['seq']}",
+                              suggestions=lista_cadastrados(st.session_state['seq'], 'emissor'), maxtags=1)
+                dados['emissor'] = tag[0] if tag is not None and len(tag) > 0 else ''
+
+                # dados['doc'] = st.text_input('cpf / cnpj', key=f"doc{st.session_state['seq']}")
+                tag = st_tags(label='cpf / cnpj', key=f"doc{st.session_state['seq']}",
+                              suggestions=lista_cadastrados(st.session_state['seq'], 'doc'), maxtags=1)
+                dados['doc'] = tag[0] if tag is not None and len(tag) > 0 else ''
+
                 dados['classe'] = st.selectbox('Classificação', load_lista('dados/class.txt'))
             with cols[3]:
 

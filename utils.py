@@ -3,6 +3,7 @@ import os
 
 from pdf2image import convert_from_bytes
 import streamlit as st
+import pandas as pd
 
 csv_file_path = 'csv/notas.csv'
 docs_path = './pdfs/'
@@ -24,8 +25,9 @@ def load_lista(path):
 def update_prefix(dados):
     str = f"{dados['date']}"
     # str += "_" + dados['doc']
-    str += "_" + dados['emissor'].replace(' ', '_')
-    str += "_" + dados['tipo'].replace(' ', '_')
+    if len(dados['emissor'].strip()) > 0:
+        str += "_" + dados['emissor'].strip().title().replace(' ', '-')
+    str += "_" + dados['tipo'].replace(' ', '-')
     if 'danf' in dados.keys():
         str += "_" + dados['danf']
     str += "_%.2f" % dados['valor']
@@ -47,3 +49,13 @@ def download(file_path, filename, ext, texto='download'):
             {texto}\
         </a>'
     st.markdown(href, unsafe_allow_html=True)
+
+
+def lista_cadastrados(key, field):
+    if os.path.isfile(csv_file_path):
+        df = pd.read_csv(csv_file_path)
+        df = df[df[field].str.len() > 0]
+        # print(list(df[field].unique()))
+        return list(df[field].unique())
+    else:
+        return []
