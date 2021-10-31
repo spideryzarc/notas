@@ -23,7 +23,8 @@ def load_lista(path):
 
 def update_prefix(dados):
     str = f"{dados['date']}"
-    str += "_" + dados['doc']
+    # str += "_" + dados['doc']
+    str += "_" + dados['emissor'].replace(' ', '_')
     str += "_" + dados['tipo'].replace(' ', '_')
     if 'danf' in dados.keys():
         str += "_" + dados['danf']

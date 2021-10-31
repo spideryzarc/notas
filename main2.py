@@ -21,7 +21,6 @@ def cadastro():
                                                 accept_multiple_files=True)
     if not hasattr(st.session_state, 'files') or len(st.session_state['files']) == 0:
         if uploaded is not None and len(uploaded) > 0:
-            uploaded
             files = [{'name': u.name, 'body': u.read()} for u in uploaded]
             files.sort(key=lambda a: a['name'])
             st.session_state['files'] = files
@@ -40,6 +39,7 @@ def cadastro():
         pass
         selected = False
         with cols[1]:
+            preview_sufix = st.empty()
             with st.spinner('carregando...'):
                 for i, c in enumerate(check):
                     if c:
@@ -66,6 +66,7 @@ def cadastro():
                     dados['danf'] = cols[2].text_input('DANF', key=f"danf{st.session_state['seq']}")
 
             ex = cols[2].expander('Detalhar', expanded=False)
+            preview_sufix.write(update_prefix(dados))
             with ex:
                 items_text = st.text_area("Itens da nota:", help="use ; para separar os campos", height=300,
                                           key=f"items{st.session_state['seq']}")
