@@ -64,6 +64,8 @@ def cadastro():
                 dados['tipo'] = st.selectbox('Tipologia', load_lista('dados/tipo.txt'))
                 if dados['tipo'] is not None and dados['tipo'] == load_lista('dados/tipo.txt')[2]:
                     dados['danf'] = cols[2].text_input('DANF', key=f"danf{st.session_state['seq']}")
+                elif 'danf' not in dados.keys():
+                    dados['danf'] = ''
 
             ex = cols[2].expander('Detalhar', expanded=False)
             preview_sufix.write(update_prefix(dados))
