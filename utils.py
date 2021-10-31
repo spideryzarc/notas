@@ -4,6 +4,7 @@ import os
 from pdf2image import convert_from_bytes
 import streamlit as st
 import pandas as pd
+import hashlib
 
 csv_file_path = 'csv/notas.csv'
 docs_path = './pdfs/'
@@ -27,9 +28,9 @@ def update_prefix(dados):
     # str += "_" + dados['doc']
     if len(dados['emissor'].strip()) > 0:
         str += "_" + dados['emissor'].strip().title().replace(' ', '-')
-    str += "_" + dados['tipo'].replace(' ', '-')
-    if 'danf' in dados.keys():
-        str += "_" + dados['danf']
+    str += "_" + dados['tipo'].strip().replace(' ', '-')
+    if 'danf' in dados.keys() and len(dados['danf']) > 0:
+        str += "_" + dados['danf'].strip()
     str += "_%.2f" % dados['valor']
 
     return str.replace('/', '_')
@@ -59,3 +60,25 @@ def lista_cadastrados(key, field):
         return list(df[field].unique())
     else:
         return []
+
+
+def get_digest(file_path):
+    h = hashlib.sha256()
+    with open(file_path, 'rb') as file:
+        while True:
+            # Reading is buffered, so we can read smaller chunks.
+            chunk = file.read(h.block_size)
+            if not chunk:
+                break
+            h.update(chunk)
+
+    return h.hexdigest()
+
+
+def list_hash_docs():
+    hash_list = []
+    for root, dirs, files in os.walk(docs_path):
+        for file in files:
+            hash_list.append(get_digest(os.path.join(root, file)))
+    # print(hash_list)
+    return hash_list

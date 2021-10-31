@@ -32,7 +32,17 @@ def cadastro():
                                                 accept_multiple_files=True)
     if not hasattr(st.session_state, 'files') or len(st.session_state['files']) == 0:
         if uploaded is not None and len(uploaded) > 0:
+            hash_list = list_hash_docs()
             files = [{'name': u.name, 'body': u.read()} for u in uploaded]
+            for f in files:
+                h = hashlib.sha256()
+                h.update(f['body'])
+                f['hash'] = h.hexdigest()
+                # print(f['hash'])
+            for i in reversed(range(len(files))):
+                if files[i]['hash'] in hash_list:
+                    cols[0].warning(f'Arquivo: {files[i]["name"]} já foi cadastrado.')
+                    del files[i]
             files.sort(key=lambda a: a['name'])
             st.session_state['files'] = files
         else:
