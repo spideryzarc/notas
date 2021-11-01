@@ -4,3 +4,4 @@ pdf2image==1.16.0
 pycpfcnpj==1.5.1
 streamlit==1.1.0
 streamlit_tags==1.2.8
+streamlit_aggrid==0.2.2.post4
