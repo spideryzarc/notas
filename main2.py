@@ -1,9 +1,12 @@
 import os
 import zipfile
+from st_aggrid import AgGrid
+from st_aggrid.grid_options_builder import GridOptionsBuilder
 
 import pandas as pd
 import streamlit as st
 from streamlit_tags import st_tags, st_tags_sidebar
+
 from pycpfcnpj import cpfcnpj
 
 from utils import *
@@ -197,7 +200,15 @@ def view():
         if os.path.isfile(csv_file_path):
             db = pd.read_csv(csv_file_path)
             download(csv_file_path, 'tabela.csv', 'csv', 'Baixar tabela')
-            st.table(db)
+            # st.table(db)
+            gb = GridOptionsBuilder.from_dataframe(db)
+
+            gb.configure_pagination()
+            gb.configure_side_bar()
+            gb.configure_default_column(groupable=True, value=True, enableRowGroup=True, aggFunc="sum", editable=True)
+            gridOptions = gb.build()
+            AgGrid(db, gridOptions=gridOptions, enable_enterprise_modules=True, height=800)
+            # AgGrid(db)
 
     with lay_pdfs:
         st.title('Arquivos')
