@@ -42,7 +42,7 @@ def save_file(dir, name, file_body):
     st.success(f"{name} salvo")
 
 
-def download(file_path, filename, ext, texto='download'):
+def download(file_path, filename, ext, texto='Download'):
     with open(file_path, 'rb') as f:
         bytes = f.read()
         b64 = base64.b64encode(bytes).decode()
