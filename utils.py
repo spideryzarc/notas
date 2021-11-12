@@ -9,6 +9,8 @@ import hashlib
 csv_file_path = 'csv/notas.csv'
 docs_path = './pdfs/'
 
+cols_order = ['id_nota', 'emissor', 'date', 'item', 'qtd', 'custo', 'classe', 'doc', 'danf', 'arquivos']
+
 
 def show_pdf(file_body, ext='.pdf'):
     if ext == '.pdf':

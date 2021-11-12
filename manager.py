@@ -1,7 +1,7 @@
 import os
 import zipfile
 import streamlit as st
-from utils import download, csv_file_path, show_pdf, docs_path
+from utils import download, csv_file_path, show_pdf, docs_path, cols_order
 import pandas as pd
 from st_aggrid import AgGrid, GridUpdateMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
@@ -41,15 +41,15 @@ def page_arquivos():
 def page_tabela():
     st.markdown('## Tabela')
     if os.path.isfile(csv_file_path):
-        db = pd.read_csv(csv_file_path)
+        df = pd.read_csv(csv_file_path)[cols_order]
         download(csv_file_path, 'tabela.csv', 'csv')
 
-        gb = GridOptionsBuilder.from_dataframe(db)
+        gb = GridOptionsBuilder.from_dataframe(df)
         gb.configure_pagination()
         # gb.configure_selection(selection_mode="multiple", use_checkbox=True)
         # gb.configure_side_bar()
         gb.configure_default_column(groupable=True, value=True, enableRowGroup=True, aggFunc="sum", editable=False)
-        data = AgGrid(db, gridOptions=gb.build(), enable_enterprise_modules=True, height=600,
+        data = AgGrid(df, gridOptions=gb.build(), enable_enterprise_modules=True, height=600,
                       update_mode=GridUpdateMode.SELECTION_CHANGED)
     else:
         st.error("Arquivo não encontrado.")
@@ -86,3 +86,27 @@ def page_delete():
                 st.experimental_rerun()
             else:
                 st.warning("Nenhuma linha foi selecionada.")
+
+
+def page_edit():
+    st.markdown('## Tabela em modo de edição')
+    if os.path.isfile(csv_file_path):
+        df = pd.read_csv(csv_file_path)
+        gb = GridOptionsBuilder.from_dataframe(df[cols_order])
+        gb.configure_pagination()
+        gb.configure_columns(['arquivos', 'id_nota'], editable=False)
+        # gb.configure_selection(selection_mode="multiple", use_checkbox=True)
+        # gb.configure_side_bar()
+        gb.configure_default_column(groupable=False, value=True, enableRowGroup=True, aggFunc="sum", editable=True)
+        data = AgGrid(df, gridOptions=gb.build(), enable_enterprise_modules=True, height=600,
+                      update_mode=GridUpdateMode.MODEL_CHANGED, key=f"{st.session_state['seq']}")
+        if st.button('Salvar alterações'):
+            df = data['data']
+            df.to_csv(csv_file_path, index=None)
+            st.experimental_rerun()
+        if st.button('Descartar alterações'):
+            st.session_state['seq'] += 1
+            st.experimental_rerun()
+
+    else:
+        st.error("Arquivo não encontrado.")
