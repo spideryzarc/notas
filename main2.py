@@ -19,7 +19,7 @@ def main():
     if st.sidebar.button("Adicionar Notas"):
         st.session_state.page = page_cadastro
 
-    if st.sidebar.button("Deletar"):
+    if st.sidebar.button("Deletar Notas"):
         st.session_state.page = page_delete
 
     if st.sidebar.button("Vizualizar Arquivos"):

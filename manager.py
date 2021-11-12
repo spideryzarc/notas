@@ -46,6 +46,8 @@ def page_tabela():
 
         gb = GridOptionsBuilder.from_dataframe(df)
         gb.configure_pagination()
+        gb.configure_column('custo', valueFormatter="'R$\t' + data.custo.toFixed(2)", aggFunc='sum')
+        gb.configure_columns(['emissor', 'date', 'classe', 'arquivos'], aggFunc='first')
         # gb.configure_selection(selection_mode="multiple", use_checkbox=True)
         # gb.configure_side_bar()
         gb.configure_default_column(groupable=True, value=True, enableRowGroup=True, aggFunc="sum", editable=False)
@@ -62,6 +64,7 @@ def page_delete():
             {'emissor': 'first', 'date': 'first', 'custo': 'sum', 'arquivos': 'first'})
         gb = GridOptionsBuilder.from_dataframe(df)
         gb.configure_pagination()
+        gb.configure_column('custo', valueFormatter="'R$\t' + data.custo.toFixed(2)", aggFunc='sum')
         gb.configure_selection(selection_mode="multiple", use_checkbox=True)
         # gb.configure_side_bar()
         # gb.configure_default_column(groupable=True, value=True, enableRowGroup=True, aggFunc="sum", editable=True)
@@ -95,6 +98,7 @@ def page_edit():
         gb = GridOptionsBuilder.from_dataframe(df[cols_order])
         gb.configure_pagination()
         gb.configure_columns(['arquivos', 'id_nota'], editable=False)
+        gb.configure_column('custo', valueFormatter="'R$\t' + data.custo.toFixed(2)", aggFunc='sum')
         # gb.configure_selection(selection_mode="multiple", use_checkbox=True)
         # gb.configure_side_bar()
         gb.configure_default_column(groupable=False, value=True, enableRowGroup=True, aggFunc="sum", editable=True)
@@ -103,7 +107,9 @@ def page_edit():
         if st.button('Salvar alterações'):
             df = data['data']
             df.to_csv(csv_file_path, index=None)
-            st.experimental_rerun()
+            st.success('Tabela atualizada com sucesso')
+            # st.session_state['seq'] += 1
+            # st.experimental_rerun()
         if st.button('Descartar alterações'):
             st.session_state['seq'] += 1
             st.experimental_rerun()
