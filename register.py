@@ -6,7 +6,7 @@ from streamlit.script_runner import RerunException
 from streamlit_tags import st_tags, st_tags_sidebar
 from pycpfcnpj import cpfcnpj
 from utils import list_hash_docs, show_pdf, update_prefix, lista_cadastrados, load_lista, save_file, csv_file_path, \
-    docs_path, rerun
+    docs_path
 import os
 import pandas as pd
 

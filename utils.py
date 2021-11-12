@@ -55,8 +55,11 @@ def download(file_path, filename, ext, texto='Download'):
 def lista_cadastrados(field):
     if os.path.isfile(csv_file_path):
         df = pd.read_csv(csv_file_path)
-        df = df[df[field].str.len() > 0]
-        return list(df[field].unique())
+        try:
+            df = df[df[field].str.len() > 0]
+            return list(df[field].unique())
+        except:
+            return []
     else:
         return []
 
@@ -81,7 +84,3 @@ def list_hash_docs():
             hash_list.append(get_digest(os.path.join(root, file)))
     # print(hash_list)
     return hash_list
-
-
-def rerun():
-    raise st.script_runner.RerunException(st.script_request_queue.RerunData(None))

@@ -3,7 +3,7 @@ import streamlit as st
 
 from utils import *
 
-from manager import page_arquivos, page_tabela
+from manager import page_arquivos, page_tabela, page_delete
 from register import page_cadastro
 
 st.set_page_config(layout='wide', initial_sidebar_state='collapsed')
@@ -19,14 +19,19 @@ def main():
     if st.sidebar.button("Adicionar Notas"):
         st.session_state.page = page_cadastro
 
-    if st.sidebar.button("Arquivos"):
+    if st.sidebar.button("Deletar"):
+        st.session_state.page = page_delete
+
+    if st.sidebar.button("Vizualizar Arquivos"):
         st.session_state.page = page_arquivos
 
-    if st.sidebar.button("Tabela"):
+    if st.sidebar.button("Vizualizar Tabela"):
         st.session_state.page = page_tabela
 
     st.session_state.page()
 
+
+# main()
 
 ph = st.empty()
 pw = ph.text_input('Senha', type="password")

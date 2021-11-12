@@ -1,10 +1,11 @@
 import os
 import zipfile
 import streamlit as st
-from utils import download, csv_file_path, show_pdf
+from utils import download, csv_file_path, show_pdf, docs_path
 import pandas as pd
 from st_aggrid import AgGrid, GridUpdateMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
+import ast
 
 
 def page_arquivos():
@@ -38,19 +39,50 @@ def page_arquivos():
 
 
 def page_tabela():
-    st.title('Tabela')
+    st.markdown('## Tabela')
     if os.path.isfile(csv_file_path):
         db = pd.read_csv(csv_file_path)
         download(csv_file_path, 'tabela.csv', 'csv')
-        # st.table(db)
-        gb = GridOptionsBuilder.from_dataframe(db)
 
+        gb = GridOptionsBuilder.from_dataframe(db)
+        gb.configure_pagination()
+        # gb.configure_selection(selection_mode="multiple", use_checkbox=True)
+        # gb.configure_side_bar()
+        gb.configure_default_column(groupable=True, value=True, enableRowGroup=True, aggFunc="sum", editable=False)
+        data = AgGrid(db, gridOptions=gb.build(), enable_enterprise_modules=True, height=600,
+                      update_mode=GridUpdateMode.SELECTION_CHANGED)
+    else:
+        st.error("Arquivo não encontrado.")
+
+
+def page_delete():
+    if os.path.isfile(csv_file_path):
+        df = pd.read_csv(csv_file_path)
+        df = df[['id_nota', 'emissor', 'custo', 'date', 'arquivos']].groupby('id_nota', as_index=False).agg(
+            {'emissor': 'first', 'date': 'first', 'custo': 'sum', 'arquivos': 'first'})
+        gb = GridOptionsBuilder.from_dataframe(df)
         gb.configure_pagination()
         gb.configure_selection(selection_mode="multiple", use_checkbox=True)
         # gb.configure_side_bar()
         # gb.configure_default_column(groupable=True, value=True, enableRowGroup=True, aggFunc="sum", editable=True)
-        gridOptions = gb.build()
-        data = AgGrid(db, gridOptions=gridOptions, enable_enterprise_modules=True, height=800,
+        st.markdown("## Selecione notas para sua remoção do cadastro.")
+        data = AgGrid(df, gridOptions=gb.build(), enable_enterprise_modules=True, height=600,
                       update_mode=GridUpdateMode.SELECTION_CHANGED)
-        if len(data['selected_rows']) > 0:
-            st.button("deletar")
+        if st.button("deletar"):
+            selected_rows = data['selected_rows']
+            if len(selected_rows) > 0:
+                id_rm_list = [selected_rows[i]["id_nota"] for i in range(len(selected_rows))]
+                df = pd.read_csv(csv_file_path)
+                df = df[~df['id_nota'].isin(id_rm_list)]
+                df.to_csv(csv_file_path, index=None)
+                for row in selected_rows:
+                    arquivos = ast.literal_eval(row['arquivos'])
+                    for arq in arquivos:
+                        file_path = os.path.join(docs_path, arq)
+                        if os.path.exists(file_path):
+                            os.remove(file_path)
+                        else:
+                            st.error(f'Erro ao deletar arquivo. {file_path} não existe.')
+                st.experimental_rerun()
+            else:
+                st.warning("Nenhuma linha foi selecionada.")
