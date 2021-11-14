@@ -16,10 +16,11 @@ def page_cadastro():
     cols = st.columns([2, 11, 5, 5])
     # uploaded files manage
     upload_placeholder = cols[1].empty()
-    uploaded = upload_placeholder.file_uploader('Selecione todos os arquivos', key=f"up_key{st.session_state['seq']}",
-                                                type=['pdf', 'jpg', 'jpeg', 'png'],
-                                                accept_multiple_files=True)
     if not hasattr(st.session_state, 'files') or len(st.session_state['files']) == 0:
+        uploaded = upload_placeholder.file_uploader('Selecione todos os arquivos',
+                                                    key=f"up_key{st.session_state['seq']}",
+                                                    type=['pdf', 'jpg', 'jpeg', 'png'],
+                                                    accept_multiple_files=True)
         if uploaded is not None and len(uploaded) > 0:
             hash_list = list_hash_docs()
             files = [{'name': u.name, 'body': u.read()} for u in uploaded]
@@ -34,6 +35,7 @@ def page_cadastro():
                     del files[i]
             files.sort(key=lambda a: a['name'])
             st.session_state['files'] = files
+            # st.experimental_rerun()
         else:
             files = None
     else:
@@ -66,7 +68,9 @@ def page_cadastro():
                 for i in reversed(range(len(check))):
                     if check[i]:
                         del check[i]
-                        del files[i]
+                        # del files[i]
+                        del st.session_state['files'][i]
+                st.session_state['seq'] += 1
                 st.experimental_rerun()
             with cols[2]:
                 dados = {}
