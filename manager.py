@@ -1,7 +1,8 @@
 import os
 import zipfile
 import streamlit as st
-from utils import download, notas_csv_file, show_pdf, docs_path, notas_cols_order
+from utils import download, notas_csv_file, show_pdf, docs_path, notas_cols_order, fornecedores_csv_file, \
+    fornecedores_cols_order
 import pandas as pd
 from st_aggrid import AgGrid, GridUpdateMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
@@ -103,10 +104,32 @@ def page_edit_notas():
         # gb.configure_side_bar()
         gb.configure_default_column(groupable=False, value=True, enableRowGroup=True, aggFunc="sum", editable=True)
         data = AgGrid(df, gridOptions=gb.build(), enable_enterprise_modules=True, height=600,
-                      update_mode=GridUpdateMode.MODEL_CHANGED, key=f"{st.session_state['seq']}")
+                      update_mode=GridUpdateMode.MODEL_CHANGED, key=f"tabnotas{st.session_state['seq']}")
         if st.button('Salvar alterações'):
             df = data['data']
             df.to_csv(notas_csv_file, index=None)
+            st.success('Tabela atualizada com sucesso')
+            # st.session_state['seq'] += 1
+            # st.experimental_rerun()
+        if st.button('Descartar alterações'):
+            st.session_state['seq'] += 1
+            st.experimental_rerun()
+
+    else:
+        st.error("Arquivo não encontrado.")
+
+def page_edit_fornecedores():
+    st.markdown('## Tabela em modo de edição')
+    if os.path.isfile(fornecedores_csv_file):
+        df = pd.read_csv(fornecedores_csv_file)
+        gb = GridOptionsBuilder.from_dataframe(df[fornecedores_cols_order])
+        gb.configure_pagination()
+        gb.configure_default_column(groupable=False, value=True, enableRowGroup=True, aggFunc="sum", editable=True)
+        data = AgGrid(df, gridOptions=gb.build(), enable_enterprise_modules=True, height=600,
+                      update_mode=GridUpdateMode.MODEL_CHANGED, key=f"tabforn{st.session_state['seq']}")
+        if st.button('Salvar alterações'):
+            df = data['data']
+            df.to_csv(fornecedores_csv_file, index=None)
             st.success('Tabela atualizada com sucesso')
             # st.session_state['seq'] += 1
             # st.experimental_rerun()

@@ -13,7 +13,7 @@ import pandas as pd
 
 
 def page_cadastro():
-    cols = st.columns([2, 11, 5, 4])
+    cols = st.columns([2, 11, 5, 5])
     # uploaded files manage
     upload_placeholder = cols[1].empty()
     uploaded = upload_placeholder.file_uploader('Selecione todos os arquivos', key=f"up_key{st.session_state['seq']}",
