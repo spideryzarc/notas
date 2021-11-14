@@ -2,11 +2,12 @@ import hashlib
 
 import numpy as np
 import streamlit as st
+from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode
 from streamlit.script_runner import RerunException
 from streamlit_tags import st_tags, st_tags_sidebar
 from pycpfcnpj import cpfcnpj
-from utils import list_hash_docs, show_pdf, update_prefix, lista_cadastrados, load_lista, save_file, csv_file_path, \
-    docs_path
+from utils import list_hash_docs, show_pdf, update_prefix, lista_cadastrados, load_lista, save_file, notas_csv_file, \
+    docs_path, fornecedores_csv_file, lista_fornecedores
 import os
 import pandas as pd
 
@@ -45,7 +46,7 @@ def page_cadastro():
         for i, file in enumerate(files):
             name, ext = os.path.splitext(file['name'])
             # name = (name[:10] + '..') if len(name) > 10 else name
-            check.append(cols[0].checkbox(name, key=f'check{i}'))
+            check.append(cols[0].checkbox(name.replace('_', ' '), key=f'check{i}'))
 
         selected = False
         with cols[1]:
@@ -61,7 +62,7 @@ def page_cadastro():
                             show_pdf(file['body'], ext)
 
         if selected:
-            if cols[0].button("Remover"):
+            if cols[0].button("Ignorar Notas Selecionadas"):
                 for i in reversed(range(len(check))):
                     if check[i]:
                         del check[i]
@@ -70,16 +71,30 @@ def page_cadastro():
             with cols[2]:
                 dados = {}
                 # dados['emissor'] = st.text_input('Emissor', key=f"emissor{st.session_state['seq']}")
-                tag = st_tags(label='Emissor', text='', key=f"emissor{st.session_state['seq']}",
-                              suggestions=lista_cadastrados('emissor'), maxtags=1)
-                dados['emissor'] = tag[0].strip().title() if tag is not None and len(tag) > 0 else ''
-
-                # dados['doc'] = st.text_input('cpf / cnpj', key=f"doc{st.session_state['seq']}")
-                tag = st_tags(label='cpf / cnpj', text='', key=f"doc{st.session_state['seq']}",
-                              suggestions=lista_cadastrados('doc'), maxtags=1)
-                dados['doc'] = tag[0] if tag is not None and len(tag) > 0 else ''
-
-                dados['classe'] = st.selectbox('Classificação', load_lista('dados/class.txt'))
+                # tag = st_tags(label='Emissor', text='', key=f"emissor{st.session_state['seq']}",
+                #               suggestions=lista_cadastrados('emissor'), maxtags=1)
+                # dados['emissor'] = tag[0].strip().title() if tag is not None and len(tag) > 0 else ''
+                emissor = st.selectbox('Emissor', ["Novo"] + lista_fornecedores(),
+                                       key=f"emissor{st.session_state['seq']}")
+                if emissor == 'Novo':
+                    dados['emissor'] = st.text_input('Nome', key=f"Nome{st.session_state['seq']}").strip().title()
+                    dados['doc'] = st.text_input('cpf / cnpj', key=f"doc{st.session_state['seq']}")
+                    dados['tel'] = st.text_input('Telefone', key=f"tel{st.session_state['seq']}")
+                    # tag = st_tags(label='cpf / cnpj', text='', key=f"doc{st.session_state['seq']}",
+                    #               suggestions=lista_cadastrados('doc'), maxtags=1)
+                    # dados['doc'] = tag[0] if tag is not None and len(tag) > 0 else ''
+                    dados['classe'] = st.selectbox('Classificação', load_lista('dados/class.txt')).strip().title()
+                else:
+                    dados['emissor'] = emissor
+                    fornecedor = pd.read_csv(fornecedores_csv_file, index_col=None)
+                    # st.write(fornecedor)
+                    row = fornecedor.loc[fornecedor['nome'] == emissor].to_dict('records')[0]
+                    # st.write(row)
+                    for f in ['doc', 'tel', 'classe']:
+                        dados[f] = row[f]
+                    st.markdown(f"**cpf/cnpj:** {dados['doc']}")
+                    st.markdown(f"**Tel.:**     {dados['tel']}")
+                    st.markdown(f"**Classe:**   {dados['classe']}")
             with cols[3]:
 
                 dados['date'] = st.date_input('Data da compra', key='data')
@@ -87,11 +102,11 @@ def page_cadastro():
                                                  key=f"valor{st.session_state['seq']}")
                 dados['tipo'] = st.selectbox('Tipologia', load_lista('dados/tipo.txt'))
                 if dados['tipo'] is not None and dados['tipo'] == load_lista('dados/tipo.txt')[2]:
-                    dados['danf'] = cols[2].text_input('DANF', key=f"danf{st.session_state['seq']}")
-                elif 'danf' not in dados.keys():
-                    dados['danf'] = ''
+                    dados['danfe'] = cols[2].text_input('DANFE', key=f"danfe{st.session_state['seq']}")
+                elif 'danfe' not in dados.keys():
+                    dados['danfe'] = ''
 
-            ex = cols[2].expander('Detalhar', expanded=False)
+            ex = cols[3].expander('Detalhar', expanded=False)
 
             with ex:
                 items_text = st.text_area("Itens da nota:", help="use ; para separar os campos", height=130,
@@ -117,16 +132,15 @@ def page_cadastro():
                         st.error(f'Formato errado: "{l}"')
                     items.append(fields)
 
-                df = pd.DataFrame(data=items, columns=['item', 'qtd', 'custo'])
-                total = df.custo.sum()
+                novas_df = pd.DataFrame(data=items, columns=['item', 'qtd', 'custo'])
+                total = novas_df.custo.sum()
                 if total < dados['valor']:
                     dif = round(dados['valor'] - total, 2)
-                    df = df.append({'item': 'Outros', 'qtd': 1, 'custo': dif}, ignore_index=True)
+                    novas_df = novas_df.append({'item': 'Outros', 'qtd': 1, 'custo': dif}, ignore_index=True)
                 elif total > dados['valor']:
                     st.warning("Valor da total nota está menor do que o listado.")
-            cols[3].write(df)
+            cols[3].write(novas_df)
             with cols[2]:
-
                 if dados['doc'] is not None:
                     if not cpfcnpj.cpf.validate(dados['doc']) and not cpfcnpj.cnpj.validate(dados['doc']):
                         st.warning("cpf / cnpj inválido")
@@ -140,7 +154,7 @@ def page_cadastro():
                         st.error('Valor da nota está 0.')
                         ok = False
                     if dados['emissor'] == '':
-                        st.error('Emissor vazio')
+                        st.error('Emissor sem nome')
                         ok = False
                     # st.session_state['emissor_input'] = ''
                     if ok:
@@ -159,22 +173,29 @@ def page_cadastro():
                             if check[i]:
                                 del files[i]
 
-                        for k, v in dados.items():
-                            if k != 'valor':
-                                df[k] = v
-                        df['arquivos'] = str(arquivos)
-                        # df['pdf_count'] = count
-                        # df['pdf_prefix'] = prefix
-                        # st.write(df)
+                        for k in ['emissor', 'date', 'tipo', 'danfe']:
+                            novas_df[k] = dados[k]
+                        novas_df['arquivos'] = str(arquivos)
 
-                        if os.path.isfile(csv_file_path):
-                            db = pd.read_csv(csv_file_path)
-                            df['id_nota'] = db['id_nota'].max() + 1
-                            db = pd.concat([db, df], ignore_index=True)
-                            db.to_csv(csv_file_path, index=None)
+                        if emissor == 'Novo':
+                            novo_fornecedor_df = pd.DataFrame(
+                                data=[{'nome': dados['emissor'], 'doc': dados['doc'], 'tel': dados['tel']
+                                          , 'classe': dados['classe']}])
+                            if os.path.isfile(fornecedores_csv_file):
+                                fornecedor_df = pd.read_csv(fornecedores_csv_file)
+                                fornecedor_df = pd.concat([fornecedor_df, novo_fornecedor_df], ignore_index=True)
+                                fornecedor_df.to_csv(fornecedores_csv_file, index=None)
+                            else:
+                                novo_fornecedor_df.to_csv(fornecedores_csv_file, index=None)
+
+                        if os.path.isfile(notas_csv_file):
+                            notas_df = pd.read_csv(notas_csv_file)
+                            novas_df['id_nota'] = notas_df['id_nota'].max() + 1
+                            notas_df = pd.concat([notas_df, novas_df], ignore_index=True)
+                            notas_df.to_csv(notas_csv_file, index=None)
                         else:
-                            df['id_nota'] = 1
-                            df.to_csv(csv_file_path, index=None)
+                            novas_df['id_nota'] = 1
+                            novas_df.to_csv(notas_csv_file, index=None)
                         # Delete all the items in Session state
                         st.session_state['seq'] += 1
                         # ph.button('Próximo')

@@ -6,10 +6,12 @@ import streamlit as st
 import pandas as pd
 import hashlib
 
-csv_file_path = 'csv/notas.csv'
+notas_csv_file = 'csv/notas.csv'
+fornecedores_csv_file = 'csv/fornecedores.csv'
 docs_path = './pdfs/'
 
-cols_order = ['id_nota', 'emissor', 'date', 'item', 'qtd', 'custo', 'classe', 'doc', 'danf', 'arquivos']
+notas_cols_order = ['id_nota', 'emissor', 'date', 'item', 'qtd', 'custo', 'danfe', 'arquivos']
+fornecedores_cols_order = ['nome', 'tel', 'doc', 'classe']
 
 
 def show_pdf(file_body, ext='.pdf'):
@@ -55,11 +57,23 @@ def download(file_path, filename, ext, texto='Download'):
 
 
 def lista_cadastrados(field):
-    if os.path.isfile(csv_file_path):
-        df = pd.read_csv(csv_file_path)
+    if os.path.isfile(notas_csv_file):
+        df = pd.read_csv(notas_csv_file)
         try:
             df = df[df[field].str.len() > 0]
             return list(df[field].unique())
+        except:
+            return []
+    else:
+        return []
+
+
+def lista_fornecedores():
+    if os.path.isfile(fornecedores_csv_file):
+        df = pd.read_csv(fornecedores_csv_file)
+        try:
+            df = df[df['nome'].str.len() > 0]
+            return list(df['nome'].unique())
         except:
             return []
     else:

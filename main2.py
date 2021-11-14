@@ -3,7 +3,7 @@ import streamlit as st
 
 from utils import *
 
-from manager import page_arquivos, page_tabela, page_delete, page_edit
+from manager import page_arquivos, page_tabela, page_delete, page_edit_notas
 from register import page_cadastro
 
 st.set_page_config(layout='wide', initial_sidebar_state='collapsed')
@@ -29,21 +29,21 @@ def main():
         st.session_state.page = page_tabela
 
     if st.sidebar.button("Editar Tabela"):
-        st.session_state.page = page_edit
+        st.session_state.page = page_edit_notas
 
     st.session_state.page()
 
 
-main()
+# main()
 
-# ph = st.empty()
-# pw = ph.text_input('Senha', type="password")
-# if 'pass' not in st.session_state or st.session_state['pass'] != st.secrets['senha']:
-#     if pw is not None:
-#         st.session_state['pass'] = pw
-#     if st.session_state['pass'] == st.secrets['senha']:
-#         ph.empty()
-#         main()
-# else:
-#     ph.empty()
-#     main()
+ph = st.empty()
+pw = ph.text_input('Senha', type="password")
+if 'pass' not in st.session_state or st.session_state['pass'] != st.secrets['senha']:
+    if pw is not None:
+        st.session_state['pass'] = pw
+    if st.session_state['pass'] == st.secrets['senha']:
+        ph.empty()
+        main()
+else:
+    ph.empty()
+    main()

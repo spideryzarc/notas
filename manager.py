@@ -1,7 +1,7 @@
 import os
 import zipfile
 import streamlit as st
-from utils import download, csv_file_path, show_pdf, docs_path, cols_order
+from utils import download, notas_csv_file, show_pdf, docs_path, notas_cols_order
 import pandas as pd
 from st_aggrid import AgGrid, GridUpdateMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
@@ -40,9 +40,9 @@ def page_arquivos():
 
 def page_tabela():
     st.markdown('## Tabela')
-    if os.path.isfile(csv_file_path):
-        df = pd.read_csv(csv_file_path)[cols_order]
-        download(csv_file_path, 'tabela.csv', 'csv')
+    if os.path.isfile(notas_csv_file):
+        df = pd.read_csv(notas_csv_file)[notas_cols_order]
+        download(notas_csv_file, 'tabela.csv', 'csv')
 
         gb = GridOptionsBuilder.from_dataframe(df)
         gb.configure_pagination()
@@ -58,8 +58,8 @@ def page_tabela():
 
 
 def page_delete():
-    if os.path.isfile(csv_file_path):
-        df = pd.read_csv(csv_file_path)
+    if os.path.isfile(notas_csv_file):
+        df = pd.read_csv(notas_csv_file)
         df = df[['id_nota', 'emissor', 'custo', 'date', 'arquivos']].groupby('id_nota', as_index=False).agg(
             {'emissor': 'first', 'date': 'first', 'custo': 'sum', 'arquivos': 'first'})
         gb = GridOptionsBuilder.from_dataframe(df)
@@ -75,9 +75,9 @@ def page_delete():
             selected_rows = data['selected_rows']
             if len(selected_rows) > 0:
                 id_rm_list = [selected_rows[i]["id_nota"] for i in range(len(selected_rows))]
-                df = pd.read_csv(csv_file_path)
+                df = pd.read_csv(notas_csv_file)
                 df = df[~df['id_nota'].isin(id_rm_list)]
-                df.to_csv(csv_file_path, index=None)
+                df.to_csv(notas_csv_file, index=None)
                 for row in selected_rows:
                     arquivos = ast.literal_eval(row['arquivos'])
                     for arq in arquivos:
@@ -91,11 +91,11 @@ def page_delete():
                 st.warning("Nenhuma linha foi selecionada.")
 
 
-def page_edit():
+def page_edit_notas():
     st.markdown('## Tabela em modo de edição')
-    if os.path.isfile(csv_file_path):
-        df = pd.read_csv(csv_file_path)
-        gb = GridOptionsBuilder.from_dataframe(df[cols_order])
+    if os.path.isfile(notas_csv_file):
+        df = pd.read_csv(notas_csv_file)
+        gb = GridOptionsBuilder.from_dataframe(df[notas_cols_order])
         gb.configure_pagination()
         gb.configure_columns(['arquivos', 'id_nota'], editable=False)
         gb.configure_column('custo', valueFormatter="'R$\t' + data.custo.toFixed(2)", aggFunc='sum')
@@ -106,7 +106,7 @@ def page_edit():
                       update_mode=GridUpdateMode.MODEL_CHANGED, key=f"{st.session_state['seq']}")
         if st.button('Salvar alterações'):
             df = data['data']
-            df.to_csv(csv_file_path, index=None)
+            df.to_csv(notas_csv_file, index=None)
             st.success('Tabela atualizada com sucesso')
             # st.session_state['seq'] += 1
             # st.experimental_rerun()
