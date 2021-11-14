@@ -37,16 +37,16 @@ def main():
     st.session_state.page()
 
 
-main()
+# main()
 
-# ph = st.empty()
-# pw = ph.text_input('Senha', type="password")
-# if 'pass' not in st.session_state or st.session_state['pass'] != st.secrets['senha']:
-#     if pw is not None:
-#         st.session_state['pass'] = pw
-#     if st.session_state['pass'] == st.secrets['senha']:
-#         ph.empty()
-#         main()
-# else:
-#     ph.empty()
-#     main()
+ph = st.empty()
+pw = ph.text_input('Senha', type="password")
+if 'pass' not in st.session_state or st.session_state['pass'] != st.secrets['senha']:
+    if pw is not None:
+        st.session_state['pass'] = pw
+    if st.session_state['pass'] == st.secrets['senha']:
+        ph.empty()
+        main()
+else:
+    ph.empty()
+    main()
