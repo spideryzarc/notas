@@ -11,7 +11,6 @@ import ast
 
 def page_arquivos():
     if st.button('Baixar tudo'):
-
         if not DOWNLOADS_PATH.is_dir():
             DOWNLOADS_PATH.mkdir()
 
