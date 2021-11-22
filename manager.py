@@ -2,7 +2,7 @@ import os
 import zipfile
 import streamlit as st
 from utils import download, notas_csv_file, show_pdf, docs_path, notas_cols_order, fornecedores_csv_file, \
-    fornecedores_cols_order
+    fornecedores_cols_order, csv_path, DOWNLOADS_PATH
 import pandas as pd
 from st_aggrid import AgGrid, GridUpdateMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
@@ -11,15 +11,21 @@ import ast
 
 def page_arquivos():
     if st.button('Baixar tudo'):
-        ziph = zipfile.ZipFile('all.zip', 'w', zipfile.ZIP_DEFLATED)
-        for path in ['pdfs/', 'csv']:
+
+        if not DOWNLOADS_PATH.is_dir():
+            DOWNLOADS_PATH.mkdir()
+
+
+        ziph = zipfile.ZipFile(DOWNLOADS_PATH / "all.zip", 'w', zipfile.ZIP_DEFLATED)
+        for path in [docs_path, csv_path]:
             for root, dirs, files in os.walk(path):
                 for file in files:
                     ziph.write(os.path.join(root, file),
                                os.path.relpath(os.path.join(root, file),
                                                os.path.join(path, '..')))
         ziph.close()
-        download('all.zip', 'all.zip', 'zip')
+        st.write(DOWNLOADS_PATH / "all.zip")
+        # download(DOWNLOADS_PATH / "all.zip", 'all.zip', 'zip')
 
     lay_pdfs, lay_view = st.columns([2, 4])
 
@@ -117,6 +123,7 @@ def page_edit_notas():
 
     else:
         st.error("Arquivo não encontrado.")
+
 
 def page_edit_fornecedores():
     st.markdown('## Tabela em modo de edição')

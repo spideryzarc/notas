@@ -1,5 +1,6 @@
 import base64
 import os
+import pathlib
 
 from pdf2image import convert_from_bytes
 import streamlit as st
@@ -9,9 +10,15 @@ import hashlib
 notas_csv_file = 'csv/notas.csv'
 fornecedores_csv_file = 'csv/fornecedores.csv'
 docs_path = './pdfs/'
+csv_path = './csv/'
 
 notas_cols_order = ['id_nota', 'emissor', 'date', 'item', 'qtd', 'custo', 'danfe', 'arquivos']
 fornecedores_cols_order = ['nome', 'tel', 'doc', 'classe']
+
+
+
+STREAMLIT_STATIC_PATH = pathlib.Path(st.__path__[0]) / 'static'
+DOWNLOADS_PATH = (STREAMLIT_STATIC_PATH / "downloads")
 
 
 def show_pdf(file_body, ext='.pdf'):
