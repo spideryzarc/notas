@@ -2,7 +2,7 @@ import os
 import zipfile
 import streamlit as st
 from utils import download, notas_csv_file, show_pdf, docs_path, notas_cols_order, fornecedores_csv_file, \
-    fornecedores_cols_order, csv_path, DOWNLOADS_PATH
+    fornecedores_cols_order, csv_path, DOWNLOADS_PATH, static_symlink
 import pandas as pd
 from st_aggrid import AgGrid, GridUpdateMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
@@ -25,6 +25,7 @@ def page_arquivos():
                                                os.path.join(path, '..')))
         ziph.close()
         st.write(DOWNLOADS_PATH / "all.zip")
+        st.write(static_symlink(DOWNLOADS_PATH / "all.zip","teste"))
         # download(DOWNLOADS_PATH / "all.zip", 'all.zip', 'zip')
 
     lay_pdfs, lay_view = st.columns([2, 4])
