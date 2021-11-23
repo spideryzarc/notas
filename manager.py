@@ -14,7 +14,6 @@ def page_arquivos():
         if not DOWNLOADS_PATH.is_dir():
             DOWNLOADS_PATH.mkdir()
 
-
         ziph = zipfile.ZipFile(DOWNLOADS_PATH / "all.zip", 'w', zipfile.ZIP_DEFLATED)
         for path in [docs_path, csv_path]:
             for root, dirs, files in os.walk(path):
@@ -24,7 +23,9 @@ def page_arquivos():
                                                os.path.join(path, '..')))
         ziph.close()
         st.write(DOWNLOADS_PATH / "all.zip")
-        st.write(static_symlink(DOWNLOADS_PATH / "all.zip","teste"))
+        st.write(static_symlink(DOWNLOADS_PATH / "all.zip", "teste"))
+        href = f'<a href="{static_symlink(DOWNLOADS_PATH / "all.zip", "teste")}" download="all.zip" \'>texto  </a>'
+        st.markdown(href, unsafe_allow_html=True)
         # download(DOWNLOADS_PATH / "all.zip", 'all.zip', 'zip')
 
     lay_pdfs, lay_view = st.columns([2, 4])
