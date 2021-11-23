@@ -22,11 +22,7 @@ def page_arquivos():
                                os.path.relpath(os.path.join(root, file),
                                                os.path.join(path, '..')))
         ziph.close()
-        st.write(DOWNLOADS_PATH / "all.zip")
-        st.write(static_symlink(DOWNLOADS_PATH / "all.zip", "teste"))
-        # href = f'<a href="{static_symlink(DOWNLOADS_PATH / "all.zip", "teste")}" download="all.zip"> texto </a>'
-        # st.markdown(href, unsafe_allow_html=True)
-        st.markdown("Download from [downloads/mydata.csv](downloads/all.zip)")
+        st.markdown("[Download](downloads/all.zip)")
         # download(DOWNLOADS_PATH / "all.zip", 'all.zip', 'zip')
 
     lay_pdfs, lay_view = st.columns([2, 4])
