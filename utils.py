@@ -39,7 +39,7 @@ def static_symlink(path_target, name_link, package_name="streamlit"):
                 list_results.append(Path(line_parts[-1]).joinpath(package_name, 'static', 'static'))
         list_raw.append(line)
     if len(list_results) == 0:
-        print(f"Error, could not find package location (source {list_raw})")
+        st.error(f"Error, could not find package location (source {list_raw})")
         return None
 
     # create target directory if it doesn't exist (all permissions)
