@@ -24,7 +24,7 @@ def page_arquivos():
         ziph.close()
         st.write(DOWNLOADS_PATH / "all.zip")
         st.write(static_symlink(DOWNLOADS_PATH / "all.zip", "teste"))
-        href = f'<a href="{static_symlink(DOWNLOADS_PATH / "all.zip", "teste")}" download="all.zip" \'>texto  </a>'
+        href = f'<a href="{static_symlink(DOWNLOADS_PATH / "all.zip", "teste")}" download="all.zip"> texto </a>'
         st.markdown(href, unsafe_allow_html=True)
         # download(DOWNLOADS_PATH / "all.zip", 'all.zip', 'zip')
 
