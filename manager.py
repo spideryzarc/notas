@@ -53,11 +53,12 @@ def page_tabela():
         gb.configure_pagination()
         gb.configure_column('custo', valueFormatter="'R$\t' + data.custo.toFixed(2)", aggFunc='sum')
         gb.configure_columns(['emissor', 'date', 'classe', 'arquivos'], aggFunc='first')
+
         # gb.configure_selection(selection_mode="multiple", use_checkbox=True)
         # gb.configure_side_bar()
         gb.configure_default_column(groupable=True, value=True, enableRowGroup=True, aggFunc="sum", editable=False)
         data = AgGrid(df, gridOptions=gb.build(), enable_enterprise_modules=True, height=600,
-                      update_mode=GridUpdateMode.SELECTION_CHANGED)
+                      update_mode=GridUpdateMode.SELECTION_CHANGED, theme='dark')
     else:
         st.error("Arquivo não encontrado.")
 
@@ -75,7 +76,7 @@ def page_delete():
         # gb.configure_default_column(groupable=True, value=True, enableRowGroup=True, aggFunc="sum", editable=True)
         st.markdown("## Selecione notas para sua remoção do cadastro.")
         data = AgGrid(df, gridOptions=gb.build(), enable_enterprise_modules=True, height=600,
-                      update_mode=GridUpdateMode.SELECTION_CHANGED)
+                      update_mode=GridUpdateMode.SELECTION_CHANGED, theme='dark')
         if st.button("deletar"):
             selected_rows = data['selected_rows']
             if len(selected_rows) > 0:
@@ -108,7 +109,7 @@ def page_edit_notas():
         # gb.configure_side_bar()
         gb.configure_default_column(groupable=False, value=True, enableRowGroup=True, aggFunc="sum", editable=True)
         data = AgGrid(df, gridOptions=gb.build(), enable_enterprise_modules=True, height=600,
-                      update_mode=GridUpdateMode.MODEL_CHANGED, key=f"tabnotas{st.session_state['seq']}")
+                      update_mode=GridUpdateMode.MODEL_CHANGED, key=f"tabnotas{st.session_state['seq']}", theme='dark')
         if st.button('Salvar alterações'):
             df = data['data']
             df.to_csv(notas_csv_file, index=None)
@@ -131,7 +132,7 @@ def page_edit_fornecedores():
         gb.configure_pagination()
         gb.configure_default_column(groupable=False, value=True, enableRowGroup=True, aggFunc="sum", editable=True)
         data = AgGrid(df, gridOptions=gb.build(), enable_enterprise_modules=True, height=600,
-                      update_mode=GridUpdateMode.MODEL_CHANGED, key=f"tabforn{st.session_state['seq']}")
+                      update_mode=GridUpdateMode.MODEL_CHANGED, key=f"tabforn{st.session_state['seq']}", theme='dark')
         if st.button('Salvar alterações'):
             df = data['data']
             df.to_csv(fornecedores_csv_file, index=None)

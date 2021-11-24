@@ -1,6 +1,7 @@
 # import pandas as pd
 import streamlit as st
 
+from dash import page_dash_gastos
 from utils import *
 
 from manager import page_arquivos, page_tabela, page_delete, page_edit_notas, page_edit_fornecedores
@@ -33,6 +34,9 @@ def main():
 
     if st.sidebar.button("Editar Tabela de Fornecedores"):
         st.session_state.page = page_edit_fornecedores
+
+    if st.sidebar.button("Gastos"):
+        st.session_state.page = page_dash_gastos
 
     st.session_state.page()
 

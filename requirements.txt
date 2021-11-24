@@ -1,7 +1,8 @@
 numpy
-streamlit
 pandas
 pdf2image
+plotly
 pycpfcnpj
+statsmodels
+streamlit
 streamlit_tags
-streamlit_aggrid
