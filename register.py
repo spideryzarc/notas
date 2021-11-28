@@ -50,7 +50,7 @@ def page_cadastro():
             name, ext = os.path.splitext(file['name'])
             # name = (name[:10] + '..') if len(name) > 10 else name
             check.append(cols[0].checkbox(name.replace('_', ' '), key=f'check{i}', value=default_check))
-            print(default_check)
+
 
         selected = False
         with cols[1]:
