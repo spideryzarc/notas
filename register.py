@@ -45,10 +45,12 @@ def page_cadastro():
     if files is not None and len(files) > 0:
         upload_placeholder.empty()
         check = []
+        default_check = len(files) == 1
         for i, file in enumerate(files):
             name, ext = os.path.splitext(file['name'])
             # name = (name[:10] + '..') if len(name) > 10 else name
-            check.append(cols[0].checkbox(name.replace('_', ' '), key=f'check{i}'))
+            check.append(cols[0].checkbox(name.replace('_', ' '), key=f'check{i}', value=default_check))
+            print(default_check)
 
         selected = False
         with cols[1]:
