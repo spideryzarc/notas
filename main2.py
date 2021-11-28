@@ -38,6 +38,12 @@ def main():
     if st.sidebar.button("Gastos"):
         st.session_state.page = page_dash_gastos
 
+    if st.sidebar.button("fix outros"):
+        df = pd.read_csv(notas_csv_file, parse_dates=['date'])[notas_cols_order]
+        fornecedores = pd.read_csv(fornecedores_csv_file, index_col='nome')
+        df.loc[df['item'] == 'Outros', 'item'] = df.loc[df['item'] == 'Outros', 'emissor'].map(fornecedores['classe'])
+        df.to_csv(notas_csv_file, index=None)
+
     st.session_state.page()
 
 

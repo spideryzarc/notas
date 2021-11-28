@@ -140,7 +140,7 @@ def page_cadastro():
                 total = novas_df.custo.sum()
                 if total < dados['valor']:
                     dif = round(dados['valor'] - total, 2)
-                    novas_df = novas_df.append({'item': 'Outros', 'qtd': 1, 'custo': dif}, ignore_index=True)
+                    novas_df = novas_df.append({'item': dados['classe'], 'qtd': 1, 'custo': dif}, ignore_index=True)
                 elif total > dados['valor']:
                     st.warning("Valor da total nota está menor do que o listado.")
             cols[3].write(novas_df)
