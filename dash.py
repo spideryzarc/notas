@@ -19,22 +19,31 @@ def plot_cost_grouped(df, field, title, alias=None):
 
 
 def page_dash_gastos():
-    st.markdown('## Gastos')
-    col = st.columns([1, 1])
+    st.markdown('## Gráficos')
+
     df = pd.read_csv(notas_csv_file, parse_dates=['date'])[notas_cols_order]
     fornecedores = pd.read_csv(fornecedores_csv_file, index_col='nome')
     df['classe'] = df['emissor'].map(fornecedores['classe'])
+    df.sort_values('date', inplace=True)
 
     ## custo acumulado
     data = df[['date', 'custo']].groupby('date').sum().sort_index()
     data['acc'] = data['custo'].cumsum()
-    fig = plotly.line(x=data.index, y=data['acc'], height=600)
+    fig = plotly.line(x=data.index, y=data['acc'], height=600, labels={'y': 'Gasto (R$)', 'x': 'Data'})
     fig.update_layout(title="Gastos Acumulados")
-    col[0].plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True)
 
     ## custo por fornecedor
-    with col[1]:
-        plot_cost_grouped(df, 'emissor', 'Gasto x Fornecedor', 'Fornecedores')
-        plot_cost_grouped(df, 'classe', 'Gasto x Classe', 'Classes')
-    with col[0]:
-        plot_cost_grouped(df, 'item', 'Gasto x Produto', 'Produto')
+    plot_cost_grouped(df, 'emissor', 'Gasto x Fornecedor', 'Fornecedores')
+
+    plot_cost_grouped(df, 'classe', 'Gasto x Classe', 'Classes')
+
+    data = df[['item', 'custo']].groupby('item', as_index=False).sum()
+    data['item'] = data['item'].str[:30]
+    data.sort_values('custo', ascending=True, inplace=True)
+    fig = plotly.pie(data.tail(10), values='custo', names='item', height=600)
+    # fig.update_layout(showlegend=False)
+    fig.update_layout(title='Top 10 itens')
+    # if alias is not None:
+    #     fig.update_layout(labels={field: alias})
+    st.plotly_chart(fig, use_container_width=True)

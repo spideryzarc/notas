@@ -15,7 +15,7 @@ if 'seq' not in st.session_state:
 
 def main():
     if not hasattr(st.session_state, 'page'):
-        st.session_state.page = page_cadastro
+        st.session_state.page = page_dash_gastos
 
     if st.sidebar.button("Adicionar Notas"):
         st.session_state.page = page_cadastro
@@ -48,8 +48,8 @@ def main():
 
 
 # main()
-
-ph = st.empty()
+lay = st.columns([4, 2, 4])
+ph = lay[1].empty()
 pw = ph.text_input('Senha', type="password")
 if 'pass' not in st.session_state or st.session_state['pass'] != st.secrets['senha']:
     if pw is not None:
