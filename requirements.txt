@@ -3,6 +3,5 @@ pandas
 pdf2image
 plotly
 pycpfcnpj
-statsmodels
 streamlit
-streamlit_tags
+streamlit-aggrid

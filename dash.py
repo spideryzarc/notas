@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as plotly
-import statsmodels.api as sm
 
 from utils import notas_csv_file, notas_cols_order, fornecedores_csv_file
 

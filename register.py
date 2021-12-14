@@ -1,12 +1,8 @@
 import hashlib
 
-import numpy as np
 import streamlit as st
-from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode
-from streamlit.script_runner import RerunException
-from streamlit_tags import st_tags, st_tags_sidebar
 from pycpfcnpj import cpfcnpj
-from utils import list_hash_docs, show_pdf, update_prefix, lista_cadastrados, load_lista, save_file, notas_csv_file, \
+from utils import list_hash_docs, show_pdf, update_prefix, load_lista, save_file, notas_csv_file, \
     docs_path, fornecedores_csv_file, lista_fornecedores
 import os
 import pandas as pd
